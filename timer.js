@@ -1,5 +1,5 @@
 /** 
- * @module Timer
+ * @module timer
  */ 
 (function(name, context, definition) { 
     if(typeof module !== 'undefined' && module.exports) module.exports = definition(); 
