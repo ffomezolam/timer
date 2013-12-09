@@ -98,6 +98,7 @@
 
             if(!this.triggers[time]) this.triggers[time] = [];
             this.triggers[time].push({ func: callback, context: context });
+            return this;
         },
 
         /**
@@ -109,27 +110,34 @@
          */
         removeTrigger: function(arg) {
             if(!this.triggers) return this;
+            console.log('deleting', arg);
             if(!arguments.length) {
                 for(var i in this.triggers) {
                     this.removeTrigger(i);
                 }
             } else {
+                console.log('arg', arg, typeof arg);
                 if(isArray(arg)) {
                     for(var i = 0, l = arg.length; i < l; i++) {
                         this.removeTrigger(arg[i]);
                     }
-                } else if(typeof arg == "number" && this.triggers[arg]) {
-                    delete this.triggers[arg];
                 } else if(typeof arg == "function") {
                     for(var i in this.triggers) {
+                        var toRemove = [];
+                        var arr = this.triggers[i];
                         for(var j = 0, l = this.triggers[i].length; j < l; j++) {
-                            var arr = this.triggers[i];
                             var func = arr[j].func;
                             if(func === arg) {
-                                arr.splice(j, 1);
+                                toRemove.push(j);
                             }
                         }
+                        for(var l = toRemove.length, j = l; j >= 0; j--) {
+                            arr.splice(toRemove[j], 1);
+                        }
                     }
+                } else if(this.triggers[arg]) {
+                    console.log("number");
+                    delete this.triggers[arg];
                 }
             }
 
