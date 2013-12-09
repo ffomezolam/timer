@@ -37,7 +37,13 @@
             this.handle = setInterval( function() {
                 that.elapsed++;
                 if(that.triggers && that.triggers[that.elapsed]) {
-                    // call triggers at time
+                    var triggers = that.triggers[that.elapsed];
+                    // invoke triggers at time, passing time as argument
+                    for(var i = 0, l = triggers.length; i < l; i++) {
+                        var trigger = triggers[i];
+                        if(trigger.context) trigger.func.call(context, that.elapsed);
+                        else                trigger.func(that.elapsed);
+                    }
                 }
             }, i || this.interval );
             return this;
