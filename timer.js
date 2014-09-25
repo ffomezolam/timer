@@ -6,8 +6,12 @@
     else if(typeof define === 'function' && define.amd) define([], definition); 
     else context[name] = definition(); 
 })('Timer', this, function() {
-    function isArray(o) {
-        return Object.prototype.toString.call(o) === "[object Array]";
+
+    // utility function for determining data types
+    function is(t, o) {
+        t = t.toLowerCase();
+        var type = Object.prototype.toString.call(o).toLowerCase().slice(8, -1);
+        return type == t;
     }
 
     /**
@@ -111,15 +115,14 @@
         removeTrigger: function(arg) {
             if(!this._triggers) return this;
             if(!arguments.length) {
-                for(var i in this._triggers) {
-                    this.removeTrigger(i);
-                }
+                // remove all
+                for(var i in this._triggers) this.removeTrigger(i);
             } else {
-                if(isArray(arg)) {
-                    for(var i = 0, l = arg.length; i < l; i++) {
-                        this.removeTrigger(arg[i]);
-                    }
-                } else if(typeof arg == "function") {
+                if(is('array', arg)) {
+                    // remove specified triggers
+                    for(var i = 0, l = arg.length; i < l; i++) this.removeTrigger(arg[i]);
+                } else if(is('function', arg)) {
+                    // remove by callback
                     for(var i in this._triggers) {
                         var toRemove = [];
                         var arr = this._triggers[i];
@@ -134,6 +137,7 @@
                         }
                     }
                 } else if(this._triggers[arg]) {
+                    // remove by time
                     delete this._triggers[arg];
                 }
             }
