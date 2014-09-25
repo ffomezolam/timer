@@ -18,10 +18,10 @@
      * @param {Number} [interval] Timer interval in milliseconds (default 60)
      */
     function Timer(interval) {
-        this.interval = interval || 60;
-        this.handle = null;
-        this.elapsed = 0;
-        this.triggers = null;
+        this._interval = interval || 60;
+        this._handle = null;
+        this._elapsed = 0;
+        this._triggers = null;
     }
 
     Timer.prototype = {
@@ -34,7 +34,7 @@
          */
         start: function(i) {
             var that = this;
-            this.handle = setInterval( function() {
+            this._handle = setInterval( function() {
                 that.elapsed++;
                 if(that.triggers && that.triggers[that.elapsed]) {
                     var triggers = that.triggers[that.elapsed];
@@ -45,7 +45,7 @@
                         else                trigger.func(that.elapsed);
                     }
                 }
-            }, i || this.interval );
+            }, i || this._interval );
             return this;
         },
 
@@ -56,7 +56,7 @@
          * @chainable
          */
         stop: function() {
-            clearInterval(this.handle);
+            clearInterval(this._handle);
             return this;
         },
 
@@ -67,7 +67,7 @@
          * @returns {Number} Elapsed time
          */
         get: function() {
-            return this.elapsed;
+            return this._elapsed;
         },
 
         /**
@@ -78,7 +78,7 @@
          * @param {Number} [n] Elapsed time
          */
         set: function(n) {
-            this.elapsed = n || 0;
+            this._elapsed = n || 0;
             return this;
         },
 
@@ -93,11 +93,11 @@
          */
         addTrigger: function(callback, time, context) {
             if(!callback) return this;
-            if(!this.triggers) this.triggers = {};
+            if(!this._triggers) this._triggers = {};
             time = time || 0;
 
-            if(!this.triggers[time]) this.triggers[time] = [];
-            this.triggers[time].push({ func: callback, context: context });
+            if(!this._triggers[time]) this._triggers[time] = [];
+            this._triggers[time].push({ func: callback, context: context });
             return this;
         },
 
@@ -109,23 +109,21 @@
          * @param {Any} arg Time or callback to remove, or array thereof
          */
         removeTrigger: function(arg) {
-            if(!this.triggers) return this;
-            console.log('deleting', arg);
+            if(!this._triggers) return this;
             if(!arguments.length) {
-                for(var i in this.triggers) {
+                for(var i in this._triggers) {
                     this.removeTrigger(i);
                 }
             } else {
-                console.log('arg', arg, typeof arg);
                 if(isArray(arg)) {
                     for(var i = 0, l = arg.length; i < l; i++) {
                         this.removeTrigger(arg[i]);
                     }
                 } else if(typeof arg == "function") {
-                    for(var i in this.triggers) {
+                    for(var i in this._triggers) {
                         var toRemove = [];
-                        var arr = this.triggers[i];
-                        for(var j = 0, l = this.triggers[i].length; j < l; j++) {
+                        var arr = this._triggers[i];
+                        for(var j = 0, l = this._triggers[i].length; j < l; j++) {
                             var func = arr[j].func;
                             if(func === arg) {
                                 toRemove.push(j);
@@ -135,9 +133,8 @@
                             arr.splice(toRemove[j], 1);
                         }
                     }
-                } else if(this.triggers[arg]) {
-                    console.log("number");
-                    delete this.triggers[arg];
+                } else if(this._triggers[arg]) {
+                    delete this._triggers[arg];
                 }
             }
 
