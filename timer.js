@@ -1,4 +1,6 @@
 /** 
+ * A timer. Basically a wrapper for setInterval making scheduling things easier
+ *
  * @module timer
  */ 
 (function(name, context, definition) { 
